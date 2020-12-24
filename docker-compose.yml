@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  employees-service:
+    image: employees-api
+    build: business-services/employees-api
+    ports:
+    - "9092:9092"
+    depends_on:
+      - config-service
+      - eureka-service
+      - workspaces-service-9090
+      - workspaces-service-9091
+  workspaces-service-9090:
+    image: workspaces-api
+    build: business-services/workspaces-api
+    ports:
+    - "9090:9090"
+    environment:
+      - SERVER_PORT=9090
+    depends_on:
+      - config-service
+      - eureka-service
+  workspaces-service-9091:
+    image: workspaces-api
+    ports:
+    - "9091:9091"
+    environment:
+      - SERVER_PORT=9091
+    depends_on:
+      - config-service
+      - eureka-service
+      - workspaces-service-9090
+  gateway-service:
+    image: api-gateway
+    build: infra/api-gateway
+    ports:
+    - "9094:9094"
+    depends_on:
+      - config-service
+      - eureka-service
+      - workspaces-service-9090
+      - workspaces-service-9091
+      - employees-service
+  config-service:
+    image: config-server
+    build: infra/config-server
+    ports:
+    - "8888:8888"
+  eureka-service:
+    image: eureka-server
+    build: infra/eureka-server
+    ports:
+    - "8282:8282"
+    depends_on:
+      - config-service

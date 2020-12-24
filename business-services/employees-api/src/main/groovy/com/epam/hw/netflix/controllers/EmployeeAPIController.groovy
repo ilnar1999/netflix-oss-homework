@@ -2,6 +2,7 @@ package com.epam.hw.netflix.controllers
 
 import com.epam.hw.netflix.api.WorkspaceAPI
 import com.epam.hw.netflix.services.EmployeeService
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,11 +13,12 @@ import org.springframework.web.bind.annotation.RestController
 class EmployeeAPIController {
 
     @Autowired
-    EmployeeService employeeService
+    private EmployeeService employeeService
 
     @Autowired
-    WorkspaceAPI workspaceAPIClient
+    private WorkspaceAPI workspaceAPIClient
 
+    @HystrixCommand(fallbackMethod = "getDefaultMessage")
     @RequestMapping("/{id}")
     def describeEmployee(@PathVariable("id") String id) {
         def employee = employeeService.findEmployee(id)
@@ -26,7 +28,11 @@ class EmployeeAPIController {
                 firstName: employee.firstName,
                 lastName : employee.lastName,
                 email    : employee.email,
-                workspace: null // null? Nope. Let's request exact workspace by employee.workspaceId from workspaces-api. How? With feign client maybe?
+                workspace: workspaceAPIClient.getWorkspaceById(employee.getWorkspaceId())
         ]
+    }
+
+    def getDefaultMessage(String id) {
+        "Try again later..."
     }
 }

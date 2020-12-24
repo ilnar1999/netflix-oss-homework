@@ -3,5 +3,5 @@ spring:
     name: workspaces-api
   cloud:
     config:
-      uri: http://${CONFIG_HOST:localhost}:8888
+      uri: http://config-service:8888
       failFast: true

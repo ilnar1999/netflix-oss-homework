@@ -2,9 +2,11 @@ spring:
   cloud:
     config:
       server:
+        native:
+          search-locations: classpath:/shared
 
   profiles:
      active: native
 
 server:
-  port: ${CONFIG_PORT:8888}
+  port: 8888
