@@ -9,8 +9,6 @@ services:
     depends_on:
       - config-service
       - eureka-service
-      - workspaces-service-9090
-      - workspaces-service-9091
   workspaces-service-9090:
     image: workspaces-api
     build: business-services/workspaces-api
@@ -23,6 +21,7 @@ services:
       - eureka-service
   workspaces-service-9091:
     image: workspaces-api
+    build: business-services/workspaces-api
     ports:
     - "9091:9091"
     environment:
@@ -30,7 +29,6 @@ services:
     depends_on:
       - config-service
       - eureka-service
-      - workspaces-service-9090
   gateway-service:
     image: api-gateway
     build: infra/api-gateway
